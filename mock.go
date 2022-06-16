@@ -13,17 +13,17 @@ const (
 )
 
 type Mock struct {
-	Request  request  `json:"request"`
-	Response response `json:"response"`
+	Request           request  `json:"request"`
+	Response          response `json:"response"`
+	ExpectedCallCount int      `json:"expected_call_count"`
 }
 
 type request struct {
-	Url               string   `json:"url"`
-	Method            string   `json:"method"`
-	QueryParameters   []string `json:"query_parameters"`
-	Headers           struct{} `json:"headers"`
-	Body              string   `json:"body"`
-	ExpectedCallCount int      `json:"expected_call_count"`
+	Url             string   `json:"url"`
+	Method          string   `json:"method"`
+	QueryParameters []string `json:"query_parameters"`
+	Headers         struct{} `json:"headers"`
+	Body            string   `json:"body"`
 }
 type response struct {
 	Status  int      `json:"status"`
@@ -49,7 +49,7 @@ func (m Mock) createRestMock() *rest.Mock {
 	restMock.HTTPMethod = m.Request.Method
 	restMock.RespHTTPCode = m.Response.Status
 	restMock.RespBody = m.Response.Body
-	restMock.ExpectedCallCount = m.Request.ExpectedCallCount
+	restMock.ExpectedCallCount = m.ExpectedCallCount
 
 	// TODO: faltan mas datos por agregar, headers, query parameters, etc.
 
