@@ -31,7 +31,7 @@ type response struct {
 	Body    string   `json:"body"`
 }
 
-func (m Mock) CreateMock(filePath string) *rest.Mock {
+func CreateMock(filePath string) *rest.Mock {
 	mock, err := readJsonFile(filePath)
 
 	if err != nil {
