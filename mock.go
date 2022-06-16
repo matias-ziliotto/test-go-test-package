@@ -4,6 +4,12 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"path/filepath"
+
+	"github.com/mercadolibre/go-meli-toolkit/restful/rest"
+)
+
+const (
+	BASE_URL = "http://localhost:8080"
 )
 
 type Mock struct {
@@ -12,21 +18,45 @@ type Mock struct {
 }
 
 type request struct {
-	URL               string      `json:"url"`
-	Method            string      `json:"method"`
-	QueryParameters   struct{}    `json:"query_parameters"`
-	Headers           struct{}    `json:"headers"`
-	IgnoreExtraFields bool        `json:"ignore_extra_fields"`
-	Body              interface{} `json:"body"`
-	ExpectedCallCount int64       `json:"expected_call_count"`
+	Url               string   `json:"url"`
+	Method            string   `json:"method"`
+	QueryParameters   []string `json:"query_parameters"`
+	Headers           struct{} `json:"headers"`
+	Body              string   `json:"body"`
+	ExpectedCallCount int      `json:"expected_call_count"`
 }
 type response struct {
 	Status  int      `json:"status"`
 	Headers struct{} `json:"headers"`
-	Body    struct{} `json:"body"`
+	Body    string   `json:"body"`
 }
 
-func ReadJsonFile(filePath string) (Mock, error) {
+func (m Mock) CreateMock(filePath string) *rest.Mock {
+	mock, err := readJsonFile(filePath)
+
+	if err != nil {
+		return &rest.Mock{}
+	}
+
+	restMock := mock.createRestMock()
+	return restMock
+}
+
+func (m Mock) createRestMock() *rest.Mock {
+	var restMock rest.Mock
+
+	restMock.URL = m.Request.Url
+	restMock.HTTPMethod = m.Request.Method
+	restMock.RespHTTPCode = m.Response.Status
+	restMock.RespBody = m.Response.Body
+	restMock.ExpectedCallCount = m.Request.ExpectedCallCount
+
+	// TODO: faltan mas datos por agregar, headers, query parameters, etc.
+
+	return &restMock
+}
+
+func readJsonFile(filePath string) (Mock, error) {
 	absPath, err := filepath.Abs("../../tests/mocks/" + filePath + ".json")
 
 	if err != nil {
