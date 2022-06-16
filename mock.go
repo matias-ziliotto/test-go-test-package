@@ -9,10 +9,6 @@ import (
 	"github.com/mercadolibre/go-meli-toolkit/restful/rest"
 )
 
-const (
-	BASE_URL = "http://localhost:8080"
-)
-
 type Mock struct {
 	Request           request  `json:"request"`
 	Response          response `json:"response"`
@@ -20,16 +16,16 @@ type Mock struct {
 }
 
 type request struct {
-	Url             string   `json:"url"`
-	Method          string   `json:"method"`
-	QueryParameters []string `json:"query_parameters"`
-	Headers         struct{} `json:"headers"`
-	Body            string   `json:"body"`
+	Url             string      `json:"url"`
+	Method          string      `json:"method"`
+	QueryParameters []string    `json:"query_parameters"`
+	Headers         struct{}    `json:"headers"`
+	Body            interface{} `json:"body"`
 }
 type response struct {
-	Status  int      `json:"status"`
-	Headers struct{} `json:"headers"`
-	Body    string   `json:"body"`
+	Status  int         `json:"status"`
+	Headers struct{}    `json:"headers"`
+	Body    interface{} `json:"body"`
 }
 
 func CreateMock(filePath string) *rest.Mock {
@@ -49,7 +45,8 @@ func (m Mock) createRestMock() *rest.Mock {
 	restMock.URL = m.Request.Url
 	restMock.HTTPMethod = m.Request.Method
 	restMock.RespHTTPCode = m.Response.Status
-	restMock.RespBody = m.Response.Body
+	responseBody, _ := json.Marshal(m.Response.Body)
+	restMock.RespBody = string(responseBody)
 	restMock.ExpectedCallCount = m.ExpectedCallCount
 
 	// TODO: faltan mas datos por agregar, headers, query parameters, etc.
@@ -58,7 +55,7 @@ func (m Mock) createRestMock() *rest.Mock {
 }
 
 func readJsonFile(filePath string) (Mock, error) {
-	absPath, err := filepath.Abs("../../tests/mocks/" + filePath + ".json")
+	absPath, err := filepath.Abs("../../tests/mocks" + filePath + "/mock.json")
 
 	if err != nil {
 		log.Println(err.Error())
