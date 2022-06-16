@@ -3,6 +3,7 @@ package mock
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 
 	"github.com/mercadolibre/go-meli-toolkit/restful/rest"
@@ -60,12 +61,14 @@ func readJsonFile(filePath string) (Mock, error) {
 	absPath, err := filepath.Abs("../../tests/mocks/" + filePath + ".json")
 
 	if err != nil {
+		log.Println(err.Error())
 		return Mock{}, err
 	}
 
 	fileData, err := ioutil.ReadFile(absPath)
 
 	if err != nil {
+		log.Println(err.Error())
 		return Mock{}, err
 	}
 
@@ -73,6 +76,7 @@ func readJsonFile(filePath string) (Mock, error) {
 	err = json.Unmarshal(fileData, &mock)
 
 	if err != nil {
+		log.Println(err.Error())
 		return Mock{}, err
 	}
 
