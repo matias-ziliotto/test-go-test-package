@@ -28,15 +28,18 @@ type response struct {
 	Body    interface{} `json:"body"`
 }
 
-func CreateMock(filePath string) *rest.Mock {
+func CreateRestMock(filePath string) Mock {
 	mock, err := readJsonFile(filePath)
 
 	if err != nil {
-		return &rest.Mock{}
+		return Mock{}
 	}
 
-	restMock := mock.createRestMock()
-	return restMock
+	return mock
+}
+
+func (m Mock) BuildRestMock() *rest.Mock {
+	return m.createRestMock()
 }
 
 func (m Mock) createRestMock() *rest.Mock {
